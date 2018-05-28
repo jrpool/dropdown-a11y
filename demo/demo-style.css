@@ -1,0 +1,33 @@
+* {
+  box-sizing: border-box;
+}
+.beyond,
+.nonmatching {
+  display: none;
+}
+.big {
+  font-size: 2.5rem;
+}
+body {
+  background: #eee;
+  margin: 3rem;
+  font-family: serif;
+}
+.center {
+  text-align: center;
+}
+code {
+  font-size: 120%;
+  color: saddlebrown;
+}
+h1 {
+  font-size: 2rem;
+  color: darkslategray;
+}
+.medium {
+  font-size: 2rem;
+}
+.tight {
+  margin-top: 0;
+  margin-bottom: 0;
+}
