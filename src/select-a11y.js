@@ -1,4 +1,3 @@
-import {html, PolymerElement} from '../node_modules/@polymer/polymer/polymer-element.js';
 import {specs} from './listSpecs.js';
 let disableCommit,
   enableCommit,
@@ -7,7 +6,56 @@ let disableCommit,
   makeExtremeLiFocal,
   moveFocusDown,
   moveFocusUp;
-// Identify the HTML content to be inserted into the slot.
+/*
+  Specify the list parameters and content. Replace this object with your own.
+  Set “type” to 'links', 'single', or 'multi'.
+  Set “maxView” to 0 for unlimited viewable list size, or a positive integer.
+*/
+const listSpecs = {
+  type: 'single',
+  legend: 'Select the continent you most want to learn about.',
+  maxView: 4,
+  name: 'conts',
+  list: [
+    [
+      'af',
+      'Africa'
+    ],
+    [
+      'an',
+      'Antarctica'
+    ],
+    [
+      'as',
+      'Asia'
+    ],
+    [
+      'au',
+      'Australia'
+    ],
+    [
+      'eu',
+      'Europe'
+    ],
+    [
+      'mn',
+      'Moon'
+    ],
+    [
+      'na',
+      'North America'
+    ],
+    [
+      'oc',
+      'Oceania'
+    ],
+    [
+      'sa',
+      'South America'
+    ]
+  ]
+};
+// Identifies the HTML content to be inserted into the slot.
 if (specs.type === 'links') {
   htmlOf = listText =>
     `<li tabindex="-1"><a href="${listText[0]}">${listText[1]}</a></li>`;
@@ -39,13 +87,13 @@ else if (specs.type === 'multi') {
     </li>`;
 }
 const htmlList = specs.list.map(listText => htmlOf(listText)).join('\n');
-// Define a function to return the set of query-matching “li” elements.
+// Returns the set of query-matching “li” elements.
 const matchingLis = () =>
   document.querySelectorAll('dd-poly li:not(.nonmatching)');
 /*
-  Define a function to identify the set of query-matching “li” elements of
-  the list, and an “li” element’s index in it or -1 if no element was
-  specified or (anomalously) the specified element is not matching.
+  Identifies the set of query-matching “li” elements of the list, and an
+  “li” element’s index in it or -1 if no element was specified or
+  (anomalously) the specified element is not matching.
 */
 const liOfMatches = (cE, li) => {
   const matches = Array.from(matchingLis());
@@ -53,19 +101,19 @@ const liOfMatches = (cE, li) => {
   return [matches, liIndex];
 };
 /*
-  Define a function to revise the set of viewable matching “li” elements of
-  the list. If any of them contains the focal anchor or control, place it
-  at or just above the middle of the allowed list window; otherwise start
-  from the start of the matching “li” elements. If the “maxView” property is
-  0 (to make the viewable size unlimited) or missing, do nothing.
+  Revises the set of viewable matching “li” elements of the list. If any of
+  them contains the focal anchor or control, places it at or just above the
+  middle of the allowed list window; otherwise starts from the start of the
+  matching “li” elements. If the “maxView” property is 0 (to make the
+  viewable size unlimited) or missing, does nothing.
 */
 const reframe = (cE, form, centralLi, maxView) => {
   // If the count of viewable “li” elements is constrained:
   if (Number.parseInt(maxView)) {
     /*
-      Identify the non-viewable ones and mark them as such, putting the central
-      one into the middle of the viewable set, or, if there is none, starting
-      the viewable set at the start.
+      Identifies the non-viewable ones and marks them as such, putting the
+      central one into the middle of the viewable set, or, if there is none,
+      starting the viewable set at the start.
     */
     const matchData = liOfMatches(cE, centralLi);
     if (matchData[1] === -1) {
@@ -92,14 +140,17 @@ const reframe = (cE, form, centralLi, maxView) => {
         matchData[0][i].classList.remove('beyond');
       }
     }
-    // Insert or remove ellipses in lieu of non-viewable “li” elements, if any.
+    /*
+      Inserts or removes ellipses in lieu of non-viewable “li” elements,
+      if any.
+    */
     const ellipses = form.getElementsByClassName('ellipsis');
     ellipses.item(0).innerHTML = viewStart > 0 ? '&hellip;' : '';
     ellipses.item(1).innerHTML
       = viewEnd < matchData[0].length - 1 ? '&hellip;' : '';
   }
 };
-// Define a function to make the commit button or form focal.
+// Makes the commit button or form focal.
 const dropOrWrapFocus = (cE, form) => {
   const button = form.querySelector('button:not([disabled])');
   if (button) {
@@ -109,7 +160,7 @@ const dropOrWrapFocus = (cE, form) => {
     form.focus();
   }
 };
-// Define a function to make the query input fild or form focal.
+// Makes the query input field or form focal.
 const focusOnQueryOrForm = (cE, form) => {
   const queryField = form.querySelector('input[type=text]');
   if (queryField) {
@@ -119,25 +170,12 @@ const focusOnQueryOrForm = (cE, form) => {
     form.focus();
   }
 };
-/*
-  Define a function to remove the commit button if the list type is links
-  and otherwise to disable it.
-*/
-const initButton = (form, listType) => {
-  if (listType === 'links') {
-    const fieldset = form.querySelector('fieldset');
-    fieldset.removeChild(fieldset.lastElementChild);
-  }
-  else {
-    disableCommit(form.querySelector('button', true));
-  }
-};
-// Define key navigation handlers.
+// Creates key navigation handlers.
 const makeKeyHandlers = (cE, form, maxView) => {
   let newFocalLi;
   moveFocusUp = focus => {
     /*
-      Identify the set of matching “li” elements and, if a focal one was
+      Identifies the set of matching “li” elements and, if a focal one was
       specified, its index in the set.
     */
     const matchData = liOfMatches(cE, focus ? focus.parentElement : null);
@@ -145,9 +183,9 @@ const makeKeyHandlers = (cE, form, maxView) => {
     if (focus) {
       // If on an “li” element:
       if (matchData[1] > -1) {
-        // Identify the new focal “li” element, i.e. the preceding one.
+        // Identifies the new focal “li” element, i.e. the preceding one.
         newFocalLi = matchData[0][matchData[1] - 1];
-        // If the there is one, move the focus to its anchor or control.
+        // If the there is one, moves the focus to its anchor or control.
         if (newFocalLi) {
           reframe(cE, form, newFocalLi, maxView);
           newFocalLi.firstElementChild.focus();
@@ -157,7 +195,7 @@ const makeKeyHandlers = (cE, form, maxView) => {
           focusOnQueryOrForm(cE, form);
         }
       }
-      // Or, if on the query input field, move the focus to the form.
+      // Or, if on the query input field, moves the focus to the form.
       else if (focus.type === 'text') {
         form.focus();
       }
@@ -178,7 +216,7 @@ const makeKeyHandlers = (cE, form, maxView) => {
     // Or, if on the form:
     else {
       const button = form.querySelector('button:not([disabled])');
-      // If an enabled commit button exists, move it there.
+      // If an enabled commit button exists, moves it there.
       if (button) {
         button.focus();
       }
@@ -199,33 +237,39 @@ const makeKeyHandlers = (cE, form, maxView) => {
   };
   moveFocusDown = focus => {
     /*
-      Identify the set of matching “li” elements and, if a focal one was
+      Identifies the set of matching “li” elements and, if a focal one was
       specified, its index in the set.
     */
     const matchData = liOfMatches(cE, focus ? focus.parentElement : null);
     // If the focus is on any element within the custom element:
     if (focus) {
-      // If on an “li” element:
+      // If on the anchor or control of an “li” element:
       if (matchData[1] > -1) {
-        // Identify the new focal “li” element, i.e. the next lower one.
+        // Identify the new focus’s “li” element, i.e. the next lower one.
         newFocalLi = matchData[0][matchData[1] + 1];
-        // If the there is one, move the focus to its anchor or control.
+        // If the there is one, moves the focus to its anchor or control.
         if (newFocalLi) {
           reframe(cE, form, newFocalLi, maxView);
           newFocalLi.firstElementChild.focus();
         }
-        // Or from the lowest “li” element to the commit button or form.
+        /*
+          Or from the lowest “li” element’s anchor or control to the commit
+          button or form.
+        */
         else {
           dropOrWrapFocus(cE, form);
         }
       }
-      // Or, if on the commit button, move the focus to the form.
+      // Or, if on the commit button, moves the focus to the form.
       else if (focus.tagName === 'BUTTON') {
         form.focus();
       }
       // Or, if on the query text field:
       else if (focus.type === 'text') {
-        // If there are any matching “li” elements, to the first one.
+        /*
+          If there are any matching “li” elements, to the first one’s anchor
+          or control.
+        */
         if (matchData[0].length) {
           newFocalLi = matchData[0][0];
           reframe(cE, form, newFocalLi, maxView);
@@ -240,11 +284,14 @@ const makeKeyHandlers = (cE, form, maxView) => {
     // Or, if on the form:
     else {
       const input = form.querySelector('input[type = text]');
-      // If a query text field exists, move it there.
+      // If a query text field exists, moves it there.
       if (input) {
         input.focus();
       }
-      // Or, if there are any matching “li” elements, to the first one.
+      /*
+        Or, if there are any matching “li” elements, to the first one’s
+        anchor or control.
+      */
       else if (matchData[0].length) {
         focalLi = matchData[0][0];
         reframe(cE, form, focalLi, maxView);
@@ -260,7 +307,7 @@ const makeKeyHandlers = (cE, form, maxView) => {
     }
   };
   /*
-    Make the first or last  matching “li” element’s anchor or control focal
+    Makes the first or last  matching “li” element’s anchor or control focal
     and central.
   */
   makeExtremeLiFocal = last => {
@@ -274,18 +321,17 @@ const makeKeyHandlers = (cE, form, maxView) => {
     }
   };
 }
-// Define a key navigation listener.
+// Creates a key navigation listener.
 const makeKeyListener = (cE, form) => {
   cE.addEventListener('keydown', event => {
     const key = event.key;
     focus = cE.shadowRoot.activeElement || document.activeElement;
     if (focus) {
       /*
-        Listen for all keydown events, but act only on vertical navigation
+        Listens for all keydown events, but acts only on vertical navigation
         keys. Up and down arrows cycle within the section, including the
         section itself. But home and end keys move focus to the top and bottom
-        of the list, omitting the query field, the submission button, and the
-        section itself.
+        of the list, omitting the query field, the commit button, and the form.
       */
       const keyType = [
         'ArrowUp', 'Up', 'ArrowDown', 'Down', 'Home', 'End'
@@ -313,14 +359,14 @@ const makeKeyListener = (cE, form) => {
         else if (keyType === 5) {
           makeExtremeLiFocal(true);
         }
-        // Prevent the browser from applying its default rule to the keypress.
+        // Prevents the browser from applying its default rule to the keypress.
         event.preventDefault();
       }
     }
   });
 };
 /**
- * Define a query handler making each “li” element of the form eligible for
+ * Creates a query handler making each “li” element of the form eligible for
  * viewing iff the query string is a case-insensitive substring of the
  * element’s text content. Whether it becomes viewable depends on the central
  * “li” element and the size of the maximum viewable sublist.
@@ -344,18 +390,18 @@ const makeQueryHandler = (cE, maxView) => {
     reframe(cE, form, null, maxView);
   };
 };
-// Define query listener.
+// Creates a query listener.
 const makeQueryListener = form => {
   const input = form.querySelector('input[type=text]');
   /*
-    If the query’s value changes, refilter the list and start the viewable
+    If the query’s value changes, refilters the list and starts the viewable
     set of matching “li” elements at the start.
   */
   input.addEventListener('input', event => {
     filter(form, input.value);
   });
 };
-// Define a selection handler.
+// Creates a selection handler.
 const makeSelectHandler = form => {
   enableCommit = form => {
     const button = form.querySelector('button');
@@ -363,7 +409,7 @@ const makeSelectHandler = form => {
     button.innerText = 'Done';
   };
 };
-// Define a selection listener.
+// Creates a selection listener.
 const makeSelectListener = cE => {
   /*
     If any “li” control selection changes, enable the “Done” button. Form
@@ -374,46 +420,50 @@ const makeSelectListener = cE => {
     enableCommit(form);
   });
 };
-// Define a commit handler.
-const makeCommitHandler = form => {
-  disableCommit = (button, init) => {
-    button.setAttribute('disabled', true);
-    button.innerText = 'N/A';
-    // If executed during initialization, make the form focal.
-    init || form.focus();
-  };
-};
-// Define a commit listener, if a commit button exists.
-const makeCommitListener = form => {
-  const button = form.querySelector('button');
-  // If the commit button exists and is activated, disable it.
+// Creates a commit handler and listener, if a commit button exists.
+const makeCommitHandlerAndListener = form => {
+  button = form.querySelector('button');
   if (button) {
+    // Handler: Disables the commit button.
+    disableCommit = (button, init) => {
+      button.setAttribute('disabled', true);
+      button.innerText = 'N/A';
+      // If a user (post-initialization) commit, also makes the form focal.
+      init || form.focus();
+    };
+    // Listener.
     button.addEventListener('click', event => {
       disableCommit(button, false);
     });
-  };
-}
+};
+// Initializes the commit button as gone (if “links”) or disabled.
+const initButton = (form, listType) => {
+  if (listType === 'links') {
+    const fieldset = form.querySelector('fieldset');
+    fieldset.removeChild(fieldset.lastElementChild);
+  }
+  else {
+    disableCommit(form.querySelector('button', true));
+  }
+};
 /**
- * `dd-poly`
+ * `select-a11y`
  * Dropdown selector with accessibility features.
  * ## Features
- * This is a custom HTML element. It is a dropdown selector. You can use it for
- * a navigation menu, a list that the user selects 1 item from, or a list that
- * the user selects any number of items from.
- * For feature details, see https://github.com/jrpool/dd-poly.
+ * This web component is a custom HTML element. It is a dropdown selector.
+ * You can use it for a navigation menu, a list that the user selects 1 item
+ * from, or a list that the user selects any number of items from.
  ## Usage
- * Create a file named `listSpecs.js` in the same directory as the page that
- * you want to use this dropdown in. Format that file according to the format
- * of the file in https://github.com/jrpool/dd-poly/tree/master/demo/listSpecs
- * that corresponds to your list type (links, single, or multi). The `maxView`
- * property represents the maximum number of list items that will be viewable
- * at once, or, if 0, indicates that all items can be viewed at once.
- * For more details, see https://github.com/jrpool/dd-poly.
+ * 1. Amend the `listSpecs` definition in this file.
+ * 2. Include this file as a script in a web page.
+ * 3. Where you want this element to appear, write:
+ *   `<select-a11y></select-a11y>`
+ * For more details, see https://github.com/jrpool/select-a11y.
  * @customElement
  * @polymer
  * @demo demo/index.html
  */
-export class DdPoly extends PolymerElement {
+export class SelectA11y extends HTMLElement {
   static get template() {
     const htmlTemplateEl = html`
       <style>
@@ -501,7 +551,7 @@ export class DdPoly extends PolymerElement {
   }
 }
 // Initialize the set of viewable “li” elements.
-window.customElements.define('dd-poly', DdPoly);
+window.customElements.define('select-a11y', SelectA11y);
 const cE = document.querySelector('dd-poly');
 const form = cE.shadowRoot.querySelector('form');
 const maxView = specs.maxView.toString();
