@@ -1,12 +1,13 @@
 {
   "name": "dd-poly",
   "version": "1.0.0",
-  "description": "web component providing a custom dropdown selector element with accessibility features",
+  "description": "zero-dependency web component providing a custom dropdown selector element with accessibility features",
   "scripts": {},
   "keywords": [
     "dropdown",
     "drop-down",
     "drop down",
+    "select",
     "selector",
     "custom element",
     "web component",
@@ -22,22 +23,15 @@
   ],
   "author": "Jonathan Pool",
   "license": "MIT",
-  "main": "dd-poly.js",
-  "dependencies": {
-    "@polymer/polymer": ">=3.0.2"
-  },
-  "devDependencies": {
-    "@polymer/iron-component-page": ">=3.0.0-pre.19",
-    "@polymer/iron-demo-helpers": ">=3.0.0-pre.19",
-    "@webcomponents/webcomponentsjs": ">=2.0.0",
-    "wct-browser-legacy": ">=1.0.1"
-  },
+  "main": "select-a11y.js",
+  "dependencies": {},
+  "devDependencies": {},
   "bugs": {
-    "url": "https://github.com/jrpool/dd-poly.git/issues"
+    "url": "https://github.com/jrpool/select-a11y.git/issues"
   },
-  "homepage": "https://github.com/jrpool/dd-poly.git/index.html",
+  "homepage": "https://github.com/jrpool/select-a11y.git/index.html",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jrpool/dd-poly"
+    "url": "https://github.com/jrpool/select-a11y"
   }
 }
