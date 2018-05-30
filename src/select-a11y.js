@@ -448,11 +448,12 @@ const initButton = (form, listType) => {
 };
 /**
  * `select-a11y`
+ * Customized built-in (HTMLSelectElement) element.
  * Dropdown selector with accessibility features.
  * ## Features
- * This web component is a custom HTML element. It is a dropdown selector.
- * You can use it for a navigation menu, a list that the user selects 1 item
- * from, or a list that the user selects any number of items from.
+ * This web component is a dropdown selector. You can use it for a navigation
+ * menu, a list that the user selects 1 item from, or a list that the user
+ * selects any number of items from.
  ## Usage
  * 1. Amend the `listSpecs` definition in this file.
  * 2. Include this file as a script in a web page.
@@ -463,107 +464,108 @@ const initButton = (form, listType) => {
  * @polymer
  * @demo demo/index.html
  */
-export class SelectA11y extends HTMLElement {
-  static get template() {
-    const htmlTemplateEl = html`
-      <style>
-        :host {
-          display: block;
-        }
-        * {
-          box-sizing: border-box;
-        }
-        .beyond,
-        .nonmatching {
-          display: none;
-        }
-        .dd-box {
-          background-color: #f5f5f8;
-        }
-        .ellipsis {
-          margin: 0 0 0 3rem;
-        }
-        input[type=text] {
-          margin-top: 0.5rem;
-          margin-bottom: 1rem;
-        }
-        legend {
-          font-size: 1.3rem;
-          font-weight: bold;
-        }
-        ul {
-          margin-top: 0;
-          margin-bottom: 0;
-          list-style-type: none;
-        }
-        .within {
-          display: block;
-        }
-      </style>
-      <form tabindex="0">
-        <fieldset>
-          <legend>[[legend]]</legend>
-          <div>
-            <label>[[queryPrompt]] <input tabindex="-1" type="text"></label>
-          </div>
-          <div class="dd-box">
-            <p class="ellipsis"></p>
-            <ul>
-              <slot></slot>
-            </ul>
-            <p class="ellipsis"></p>
-          </div>
-          <div class="button">
-            <button tabindex="-1" type="button">Done</button>
-          </div>
-        </fieldset>
-      </form>
-    `;
-    return htmlTemplateEl;
-  }
-  static get properties() {
-    return {
-      /** HTML legend element text for the dropdown selector */
-      legend: {
-        type: String,
-        value: specs.legend
-      },
-      /** HTML label element text for the query text input field */
-      queryPrompt: {
-        type: String,
-        value: 'Show only items containing:'
-      },
-      /** Set of HTML li elements containing the list items */
-      list: {
-        type: String,
-        value: htmlList
-      }
-    };
-  }
+class SelectA11y extends HTMLSelectElement {
+  // static get template() {
+  //   const htmlTemplateEl = html`
+  //     <style>
+  //       :host {
+  //         display: block;
+  //       }
+  //       * {
+  //         box-sizing: border-box;
+  //       }
+  //       .beyond,
+  //       .nonmatching {
+  //         display: none;
+  //       }
+  //       .dd-box {
+  //         background-color: #f5f5f8;
+  //       }
+  //       .ellipsis {
+  //         margin: 0 0 0 3rem;
+  //       }
+  //       input[type=text] {
+  //         margin-top: 0.5rem;
+  //         margin-bottom: 1rem;
+  //       }
+  //       legend {
+  //         font-size: 1.3rem;
+  //         font-weight: bold;
+  //       }
+  //       ul {
+  //         margin-top: 0;
+  //         margin-bottom: 0;
+  //         list-style-type: none;
+  //       }
+  //       .within {
+  //         display: block;
+  //       }
+  //     </style>
+  //     <form tabindex="0">
+  //       <fieldset>
+  //         <legend>[[legend]]</legend>
+  //         <div>
+  //           <label>[[queryPrompt]] <input tabindex="-1" type="text"></label>
+  //         </div>
+  //         <div class="dd-box">
+  //           <p class="ellipsis"></p>
+  //           <ul>
+  //             <slot></slot>
+  //           </ul>
+  //           <p class="ellipsis"></p>
+  //         </div>
+  //         <div class="button">
+  //           <button tabindex="-1" type="button">Done</button>
+  //         </div>
+  //       </fieldset>
+  //     </form>
+  //   `;
+  //   return htmlTemplateEl;
+  // }
+  // static get properties() {
+  //   return {
+  //     /** HTML legend element text for the dropdown selector */
+  //     legend: {
+  //       type: String,
+  //       value: specs.legend
+  //     },
+  //     /** HTML label element text for the query text input field */
+  //     queryPrompt: {
+  //       type: String,
+  //       value: 'Show only items containing:'
+  //     },
+  //     /** Set of HTML li elements containing the list items */
+  //     list: {
+  //       type: String,
+  //       value: htmlList
+  //     }
+  //   };
+  // }
   constructor() {
     super();
+    this.setAttribute('size', 5);
     /*
       Replace the slot element with the list. This puts the “li” elements,
       unlike the remainder of the form, outside cE.shadowRoot, so they are
       treated as descendants of document and dd-poly, not of form.
     */
-    this.innerHTML = htmlList;
+    // this.innerHTML = htmlList;
   }
 }
 // Initialize the set of viewable “li” elements.
-window.customElements.define('select-a11y', SelectA11y);
-const cE = document.querySelector('dd-poly');
-const form = cE.shadowRoot.querySelector('form');
-const maxView = specs.maxView.toString();
-reframe(cE, form, document.querySelector('dd-poly li'), maxView);
+window.customElements.define('select-a11y', SelectA11y, {extends: "select"});
+// const cE = document.querySelector('dd-poly');
+// const form = cE.shadowRoot.querySelector('form');
+// const maxView = specs.maxView.toString();
+// reframe(cE, form, document.querySelector('dd-poly li'), maxView);
 // Create handlers and listeners.
-makeKeyHandlers(cE, form, maxView);
-makeKeyListener(cE, form);
-makeQueryHandler(cE, maxView);
-makeQueryListener(form);
-makeSelectHandler(form);
-makeSelectListener(cE);
-makeCommitHandler(form);
-makeCommitListener(form);
+// makeKeyHandlers(cE, form, maxView);
+// makeKeyListener(cE, form);
+// makeQueryHandler(cE, maxView);
+// makeQueryListener(form);
+// makeSelectHandler(form);
+// makeSelectListener(cE);
+// makeCommitHandler(form);
+// makeCommitListener(form);
 // Remove or disable the commit button.
-initButton(form, specs.type);
+// initButton(form, specs.type);
